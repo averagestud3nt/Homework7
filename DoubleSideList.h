@@ -8,6 +8,7 @@ struct DSNode
 	DSNode* previous;
 
 	DSNode(int value) : value{ value }, next{ nullptr }, previous{ nullptr } {}
+
 };
 
 
@@ -182,6 +183,224 @@ public:
 			current = current->next;
 		}
 		return os;
+	}
+
+	DoubleSideList* clone(DoubleSideList* List)
+	{
+		DoubleSideList* newList = new DoubleSideList();
+
+		DSNode* addedList1 = List->m_tail;
+		while (addedList1 != nullptr)
+		{
+			newList->add(addedList1->value, "head");
+			addedList1 = addedList1->next;
+		}
+
+		return newList;
+	};
+
+	DoubleSideList* operator+(DoubleSideList* List)
+	{
+		DoubleSideList* newList = new DoubleSideList();
+
+		DSNode* addedList1 = this->m_tail;
+		while (addedList1 != nullptr)
+		{
+			newList->add(addedList1->value,"head");
+			addedList1 = addedList1->next;
+		}
+
+		DSNode* addedList2 = List->m_tail;
+		while (addedList2 != nullptr)
+		{
+			newList->add(addedList2->value, "head");
+			addedList2 = addedList2->next;
+		}
+
+		return newList;
+	}
+
+	DoubleSideList* operator*(DoubleSideList* list)
+	{
+		DoubleSideList* newList = new DoubleSideList();
+
+		DSNode* addedList1 = this->m_tail;
+		while (addedList1 != nullptr)
+		{
+			if (list->find(addedList1->value,"tail"))
+			{
+				newList->add(addedList1->value, "head");
+			}
+			addedList1 = addedList1->next;
+		}
+
+		DSNode* addedList2 = list->m_tail;
+		while (addedList2 != nullptr)
+		{
+			if (this->find(addedList2->value, "tail"))
+			{
+				newList->add(addedList2->value, "head");
+			}
+			addedList2 = addedList2->next;
+		}
+
+		return newList;
+	}
+};
+
+template <class T>
+class Array
+{
+private:
+	T* m_array;
+	int m_hiddenSize;
+	int m_arraySize;
+	int m_growFactor;
+public:
+	Array() : Array(5, 5){}
+
+	Array(int size, int grow) : m_arraySize(size), m_growFactor(grow),m_hiddenSize(m_arraySize)
+	{ 
+		m_array = new T[m_arraySize];
+	}
+
+
+	int getSize() const { return m_arraySize; }
+
+	void setSize(int newSize, int newGrowFactor)
+	{
+		if (m_arraySize < newSize)
+		{
+			T* newArray = new T[newSize];
+			for (int i = 0; i < m_arraySize; ++i)
+			{
+				newArray = m_array[i];
+			}
+			delete[] m_array;
+			m_array = newArray;
+		}
+		m_hiddenSize = m_arraySize;
+		m_arraySize = newSize;
+		m_growFactor = newGrowFactor;
+	}
+
+	int getUppperBound() const
+	{
+		int highestIndex = -1;
+		for (int i = 0; i < m_arraySize; ++i)
+		{
+			if (m_array[i] != nullptr)
+				highestIndex = i;
+		}
+		return highestIndex;
+	}
+
+	bool isEmpty() const
+	{
+		for (int i = 0; i < m_arraySize; ++i)
+		{
+			if (m_array[i] == nullptr)
+				return false;
+		}
+		return true;
+	}
+
+	bool freeExtra()
+	{
+		if (m_hiddenSize > m_arraySize)
+		{
+			for (int i = m_arraySize; i < m_hiddenSize; i++)
+			{
+				delete m_array[i];
+			}
+		}
+	}
+
+	bool removeAll()
+	{
+		for (int i = 0; i < m_arraySize; ++i)
+		{
+			delete m_array[i];
+			m_array[i] = nullptr;
+		}
+	}
+
+	T getAt(int index) const {return m_array[index];}
+
+	T* getData() const { return m_array; }
+
+
+
+	void setAt(T element, int index)
+	{
+		m_array[index] = element;
+	}
+
+	void insertAt(T element, int index)
+	{
+		T* newArray = new T[m_arraySize + m_growFactor];
+		for (int i = 0; i < index; i++)
+		{
+			newArray[i] = m_array[i];
+		}
+		for (int i = index ; i < m_arraySize + m_growFactor - 1; i++)
+		{
+			newArray[i + 1] = m_array[i];
+		}
+		newArray[index] = element;
+		delete[] m_array;
+		m_array = newArray;
+	}
+
+	void removeAt(T element, int index)
+	{
+		delete m_array[index];
+	}
+
+	T operator[](int index)
+	{
+		return (m_array[index])*;
+	}
+
+	void Add(T element)
+	{
+		for (int i = 0; i < m_arraySize; ++i)
+		{
+			if (m_array[i] == nullptr)
+			{
+				m_array[i] = element;
+				return;
+			}
+		}
+		T* newArr = new T[m_arraySize + m_growFactor];
+		for (int i = 0; i < m_arraySize; i++)
+		{
+			newArr = m_array[i]
+		}
+		m_arraySize += m_growFactor;
+		m_hiddenSize = m_arraySize;
+		newArr[m_arraySize / 2] = element;
+		delete[] m_array;
+		m_array = newArr;
+	}
+
+	void Append(Array arr)
+	{
+		int newSize = (arr.getUppperBound() + 1) + m_arraySize;
+		T* newArray = new T[newSize];
+		
+		int counter;
+		for (int i = 0; i < m_arraySize; i++)
+		{
+			newArray[counter++] = m_array[i];
+		}
+		for (int i = 0; i < arr.getUppperBound() + 1; i++)
+		{
+			newArray[counter++] = arr[i];
+		}
+
+		delete[] m_array;
+		m_array = newArray;
 	}
 };
 
